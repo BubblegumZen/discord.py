@@ -644,6 +644,7 @@ class Member(discord.abc.Messageable, _UserTag):
         roles: List[discord.abc.Snowflake] = MISSING,
         voice_channel: Optional[VocalGuildChannel] = MISSING,
         reason: Optional[str] = None,
+        timeout_until: Optional[datetime.datetime] = MISSING
     ) -> Optional[Member]:
         """|coro|
 
@@ -750,6 +751,12 @@ class Member(discord.abc.Messageable, _UserTag):
         if payload:
             data = await http.edit_member(guild_id, self.id, reason=reason, **payload)
             return Member(data=data, guild=self.guild, state=self._state)
+        
+        if timeout_until is not MISSING:
+            if timeout_until is None:
+                payload['communication_disabled_until'] = None
+            else:
+                payload['communication_disabled_until'] = timeout_until.isoformat()
 
     async def request_to_speak(self) -> None:
         """|coro|
