@@ -747,16 +747,18 @@ class Member(discord.abc.Messageable, _UserTag):
 
         if roles is not MISSING:
             payload['roles'] = tuple(r.id for r in roles)
-
-        if payload:
-            data = await http.edit_member(guild_id, self.id, reason=reason, **payload)
-            return Member(data=data, guild=self.guild, state=self._state)
-        
+            
         if timeout_until is not MISSING:
             if timeout_until is None:
                 payload['communication_disabled_until'] = None
             else:
                 payload['communication_disabled_until'] = timeout_until.isoformat()
+
+        if payload:
+            data = await http.edit_member(guild_id, self.id, reason=reason, **payload)
+            return Member(data=data, guild=self.guild, state=self._state)
+        
+        
 
     async def request_to_speak(self) -> None:
         """|coro|
